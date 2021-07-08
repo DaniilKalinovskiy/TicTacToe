@@ -1,38 +1,41 @@
 //◦ Playrix ◦
-// TicTacToe.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+
 
 #include <iostream>
 
 using namespace std;
 
-void Setup();
 void Draw();
 void Input();
-void Score();
+void isGameEnded();
+void Restart();
+void ChangePlayer();
+void GameFinish(int);
 
-int PlayerScore = 0;
+int FirstPlayerScore = 0;
+int SecondPlayerScore = 0;
+
 char PlayingField[3][3];
-bool PlayerNo = true;
-bool isGameEnded = false;
+int PlayerNo = 1;
 
 int main()
 {
-    while (!isGameEnded)
-    {
-        Draw();
+    Draw();
+    while (true)
+    {        
         Input();
+        system("cls");
+        Draw();
+        isGameEnded();
+        ChangePlayer();
     }
     return 0;
 }
 
-void Setup()
-{
-    
-}
-
 void Draw()
 {
+    cout << "Score: " << FirstPlayerScore << " : " << SecondPlayerScore << endl << endl;
+
     for (int coordX = 0; coordX < 3; coordX++)
     {
         for (int coordY = 0; coordY < 3; coordY++)
@@ -51,40 +54,118 @@ void Draw()
             }
         }
         cout << endl;
-    }                           //Добавить вывод счета
+    }
+    cout << endl;
 }
 
 void Input()
 {
-    int playerNo;
+    bool isFullFieldSelected = false;
     int x;
     int y;
 
-    if (PlayerNo) playerNo = 1;
-    else playerNo = 2;
-
-    cout << "Player " << playerNo << " Please, enter the X coordinate:" << endl;
-    cin >> x;
-    cout << "Please, enter the Y coordinate:" << endl;
-    cin >> y;
-
-    //Сделать возможность заново вводить координаты, если ячейка заполнена
-
-    if (PlayingField[x][y] == 0)                //Проверяем, не занята ли ячейка
+    while (!isFullFieldSelected)            //Проверяем, не занята ли ячейка, если да, просим ввести координаты ещё раз
     {
-        if (PlayerNo) PlayingField[x][y] = 1;
-        else PlayingField[x][y] = -1;
+        cout << "Player " << PlayerNo << " Please, enter the X coordinate:" << endl;
+        cin >> x;
+        cout << "Please, enter the Y coordinate:" << endl;
+        cin >> y;
+     
+        if (PlayingField[x][y] == 0)                
+        {
+            if (PlayerNo == 1) PlayingField[x][y] = 1;
+            else PlayingField[x][y] = -1;
+            isFullFieldSelected = !isFullFieldSelected;
+        }
+        else
+            cout << "This field is not empty! \n";
     }
-    else cout << "This field is not empty!";
-
-
-
-    PlayerNo = !PlayerNo;
 }
 
-void Score()
+void isGameEnded()
 {
+    int columnSum, stringSum, generalAbsSum = 0;
+    bool _isGameEnded = false;
+
+    for (int coordX = 0; coordX < 3; coordX++)
+    {
+        columnSum = 0;
+        stringSum = 0;
+        for (int coordY = 0; coordY < 3; coordY++)
+        {
+            columnSum += PlayingField[coordX][coordY];
+            stringSum += PlayingField[coordY][coordX];
+            generalAbsSum += abs(PlayingField[coordY][coordX]);
+
+            if (columnSum == 3 || stringSum == 3 || PlayingField[0][0] + PlayingField[1][1] + PlayingField[2][2] == 3)
+            {
+                FirstPlayerScore++;
+                GameFinish(1);
+            }
+            else if (columnSum == - 3 || stringSum == - 3 || PlayingField[0][0] + PlayingField[1][1] + PlayingField[2][2] == - 3)
+            {
+                 SecondPlayerScore++;
+                 GameFinish(-1);
+            }
+            else if (generalAbsSum == 9)
+            {
+                GameFinish(0);
+            }
+        }        
+    }
 }
+
+void GameFinish(int winner)
+{
+    if (winner == 1 || winner == -1)
+    {
+        cout << "\n Player " << PlayerNo << " win!";
+    }
+    else cout << "\n All fields are filled!";
+    
+    cout << "\n \n want to replay? 1 - yes / 2 - no" << endl;
+
+    int isReplayGame;
+    cin >> isReplayGame;
+
+    if (isReplayGame == 1)
+    {
+        Restart();
+    }
+    exit(0);
+}
+
+void Restart()
+{
+    for (int coordX = 0; coordX < 3; coordX++)
+    {
+        for (int coordY = 0; coordY < 3; coordY++)
+        {
+            PlayingField[coordX][coordY] = 0;
+        }
+    }
+    system("cls");
+    PlayerNo = 1;
+
+    main();
+}
+
+void ChangePlayer()
+{
+    if (PlayerNo == 1) PlayerNo++;
+    else PlayerNo--;
+}
+
+
+
+
+//Добавить проверку ввода данных
+
+
+
+
+
+
 
 
 
