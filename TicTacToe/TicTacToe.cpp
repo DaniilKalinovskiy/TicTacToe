@@ -7,16 +7,17 @@ using namespace std;
 
 void Draw();
 void Input();
+int isInputCorrect(char);
 void isGameEnded();
 void Restart();
 void ChangePlayer();
 void GameFinish(int);
 
-int FirstPlayerScore = 0;
-int SecondPlayerScore = 0;
+int kFirstPlayerScore = 0;
+int kSecondPlayerScore = 0;
 
-char PlayingField[3][3];
-int PlayerNo = 1;
+char kPlayingField[3][3];
+int kPlayerNo = 1;
 
 int main()
 {
@@ -34,13 +35,13 @@ int main()
 
 void Draw()
 {
-    cout << "Score: " << FirstPlayerScore << " : " << SecondPlayerScore << endl << endl;
+    cout << "Score: " << kFirstPlayerScore << " : " << kSecondPlayerScore << endl << endl;
 
     for (int coordX = 0; coordX < 3; coordX++)
     {
         for (int coordY = 0; coordY < 3; coordY++)
         {
-            switch (PlayingField[coordX][coordY])
+            switch (kPlayingField[coordX][coordY])
             {
             case -1:
                 cout << "[O]";
@@ -66,19 +67,46 @@ void Input()
 
     while (!isFullFieldSelected)            //Проверяем, не занята ли ячейка, если да, просим ввести координаты ещё раз
     {
-        cout << "Player " << PlayerNo << " Please, enter the X coordinate:" << endl;
-        cin >> x;
-        cout << "Please, enter the Y coordinate:" << endl;
-        cin >> y;
-     
-        if (PlayingField[x][y] == 0)                
+        x = isInputCorrect('X');
+        if (kPlayingField[x][0] == 0 || kPlayingField[x][1] == 0 || kPlayingField[x][2] == 0)
         {
-            if (PlayerNo == 1) PlayingField[x][y] = 1;
-            else PlayingField[x][y] = -1;
-            isFullFieldSelected = !isFullFieldSelected;
+            y = isInputCorrect('Y');
+
+            if (kPlayingField[x][y] == 0)
+            {
+                if (kPlayerNo == 1) kPlayingField[x][y] = 1;
+                else kPlayingField[x][y] = -1;
+                isFullFieldSelected = !isFullFieldSelected;
+            }
+            else
+                cout << "This field is not empty! \n";
         }
         else
-            cout << "This field is not empty! \n";
+            cout << "This row is full! \n";
+    }
+}
+
+int isInputCorrect(char coord) // Проверяем на корректность введённое значение
+{
+    int coordValue;
+    while (true)
+    {
+        cout << "Player " << kPlayerNo << ", please, enter the " << coord << " coordinate (1-3):" << endl;
+        cin >> coordValue;
+
+        if (coordValue == 1 || coordValue == 2 || coordValue == 3)
+        { 
+            coordValue--;
+            return coordValue;
+        }
+        else
+        {
+            cout << "Oops, that input is invalid.  Please try again.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+            
+        
     }
 }
 
@@ -93,18 +121,18 @@ void isGameEnded()
         stringSum = 0;
         for (int coordY = 0; coordY < 3; coordY++)
         {
-            columnSum += PlayingField[coordX][coordY];
-            stringSum += PlayingField[coordY][coordX];
-            generalAbsSum += abs(PlayingField[coordY][coordX]);
+            columnSum += kPlayingField[coordX][coordY];
+            stringSum += kPlayingField[coordY][coordX];
+            generalAbsSum += abs(kPlayingField[coordY][coordX]);
 
-            if (columnSum == 3 || stringSum == 3 || PlayingField[0][0] + PlayingField[1][1] + PlayingField[2][2] == 3)
+            if (columnSum == 3 || stringSum == 3 || kPlayingField[0][0] + kPlayingField[1][1] + kPlayingField[2][2] == 3)
             {
-                FirstPlayerScore++;
+                kFirstPlayerScore++;
                 GameFinish(1);
             }
-            else if (columnSum == - 3 || stringSum == - 3 || PlayingField[0][0] + PlayingField[1][1] + PlayingField[2][2] == - 3)
+            else if (columnSum == - 3 || stringSum == - 3 || kPlayingField[0][0] + kPlayingField[1][1] + kPlayingField[2][2] == - 3)
             {
-                 SecondPlayerScore++;
+                 kSecondPlayerScore++;
                  GameFinish(-1);
             }
             else if (generalAbsSum == 9)
@@ -119,7 +147,7 @@ void GameFinish(int winner)
 {
     if (winner == 1 || winner == -1)
     {
-        cout << "\n Player " << PlayerNo << " win!";
+        cout << "\n Player " << kPlayerNo << " win!";
     }
     else cout << "\n All fields are filled!";
     
@@ -141,19 +169,19 @@ void Restart()
     {
         for (int coordY = 0; coordY < 3; coordY++)
         {
-            PlayingField[coordX][coordY] = 0;
+            kPlayingField[coordX][coordY] = 0;
         }
     }
     system("cls");
-    PlayerNo = 1;
+    kPlayerNo = 1;
 
     main();
 }
 
 void ChangePlayer()
 {
-    if (PlayerNo == 1) PlayerNo++;
-    else PlayerNo--;
+    if (kPlayerNo == 1) kPlayerNo++;
+    else kPlayerNo--;
 }
 
 
